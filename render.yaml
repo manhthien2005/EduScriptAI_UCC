@@ -6,4 +6,12 @@ services:
       - key: DATABASE_URL
         value: postgresql://eduscriptai_user:mvi5CB0OCDAHWt9q4cQND3hE8H9p2rZB@dpg-d0md03je5dus738dqhv0-a.singapore-postgres.render.com/eduscriptai
       - key: ASPNETCORE_ENVIRONMENT
-        value: Production 
+        value: Production
+      - key: TINYMCE_API_KEY
+        value: f796ndfglz66thjm1lmxb7kvpbvt6t4sw4vzei35t4arzhos
+      - key: GOOGLE_API_KEY
+        value: AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - key: GOOGLE_CLIENT_ID
+        value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+      - key: GOOGLE_CLIENT_SECRET
+        value: GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 

@@ -242,7 +242,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.tiny.cloud/1/f796ndfglz66thjm1lmxb7kvpbvt6t4sw4vzei35t4arzhos/tinymce/6/tinymce.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/@Environment.GetEnvironmentVariable("TINYMCE_API_KEY")/tinymce/6/tinymce.min.js"></script>
     <script>
         // Khởi tạo TinyMCE
         tinymce.init({
@@ -282,7 +282,7 @@
                     color: #3498db;
                 }
             `,
-            apiKey: 'f796ndfglz66thjm1lmxb7kvpbvt6t4sw4vzei35t4arzhos'
+            apiKey: '@Environment.GetEnvironmentVariable("TINYMCE_API_KEY")'
         });
 
         // Hiển thị thông báo
