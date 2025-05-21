@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: eduscriptai
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://eduscriptai_user:mvi5CB0OCDAHWt9q4cQND3hE8H9p2rZB@dpg-d0md03je5dus738dqhv0-a.singapore-postgres.render.com/eduscriptai
+      - key: NODE_ENV
+        value: production 
