@@ -148,9 +148,14 @@
         <a asp-action="Manage" class="btn btn-custom btn-back">
             <i class="fas fa-arrow-left me-2"></i>Quay lại
         </a>
-        <a asp-action="Export" asp-route-id="@Model.Id" class="btn btn-custom btn-export">
-            <i class="fas fa-file-export me-2"></i>Xuất Word
-        </a>
+        <div>
+            <a asp-action="Export" asp-route-id="@Model.Id" class="btn btn-custom btn-export me-2">
+                <i class="fas fa-file-export me-2"></i>Xuất Word
+            </a>
+            <a asp-action="ExportPdf" asp-route-id="@Model.Id" class="btn btn-custom btn-export">
+                <i class="fas fa-file-pdf me-2"></i>Xuất PDF
+            </a>
+        </div>
     </div>
 
     <div class="card info-card mb-4">

@@ -7,6 +7,14 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Text.Json;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using WordDocument = DocumentFormat.OpenXml.Wordprocessing.Document;
+using WordParagraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using WordText = DocumentFormat.OpenXml.Wordprocessing.Text;
+using WordPageSize = DocumentFormat.OpenXml.Wordprocessing.PageSize;
+using PdfDocument = QuestPDF.Fluent.Document;
 
 namespace EduScriptAI.Controllers;
 
@@ -150,18 +158,35 @@ public class ScriptController : Controller
         using var document = WordprocessingDocument.Create(stream, WordprocessingDocumentType.Document);
         
         var mainPart = document.AddMainDocumentPart();
-        mainPart.Document = new Document();
+        mainPart.Document = new WordDocument();
         var body = mainPart.Document.AppendChild(new Body());
+
+        // Add title with style
+        var titlePara = body.AppendChild(new WordParagraph());
+        var titleRun = titlePara.AppendChild(new Run());
+        titleRun.AppendChild(new RunProperties(new Bold()));
+        titleRun.AppendChild(new WordText(script.Keywords));
         
-        // Add content
-        var paragraph = body.AppendChild(new Paragraph());
-        var run = paragraph.AppendChild(new Run());
-        run.AppendChild(new Text(script.Content));
+        // Add metadata
+        var metaPara = body.AppendChild(new WordParagraph());
+        var metaRun = metaPara.AppendChild(new Run());
+        metaRun.AppendChild(new WordText($"Cấp học: {script.Level}"));
+        
+        var typePara = body.AppendChild(new WordParagraph());
+        var typeRun = typePara.AppendChild(new Run());
+        typeRun.AppendChild(new WordText($"Loại: {script.Type}"));
+        
+        // Add content with proper formatting
+        var contentPara = body.AppendChild(new WordParagraph());
+        var contentRun = contentPara.AppendChild(new Run());
+        contentRun.AppendChild(new WordText(script.Content));
         
         // Save
         mainPart.Document.Save();
+        document.Save();
         
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"script_{id}.docx");
+        stream.Position = 0;
+        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"{script.Keywords}.docx");
     }
 
     [HttpPost]
@@ -177,5 +202,90 @@ public class ScriptController : Controller
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+
+    public async Task<IActionResult> ExportPdf(int id)
+    {
+        var script = await _context.Scripts.FindAsync(id);
+        if (script == null)
+        {
+            return NotFound();
+        }
+
+        var document = PdfDocument.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(2, Unit.Centimetre);
+                page.DefaultTextStyle(x => x.FontSize(12));
+
+                page.Header().Element(ComposeHeader);
+                page.Content().Element(x => ComposeContent(x, script));
+                page.Footer().Element(ComposeFooter);
+            });
+        });
+
+        var pdfBytes = document.GeneratePdf();
+        return File(pdfBytes, "application/pdf", $"{script.Keywords}.pdf");
+    }
+
+    private void ComposeHeader(IContainer container)
+    {
+        container.Row(row =>
+        {
+            row.RelativeItem().Column(column =>
+            {
+                column.Item().Text(text =>
+                {
+                    text.Span("EduScriptAI").FontSize(20).SemiBold();
+                });
+            });
+        });
+    }
+
+    private void ComposeContent(IContainer container, Script script)
+    {
+        container.Column(column =>
+        {
+            column.Item().Text(text =>
+            {
+                text.Span(script.Keywords).FontSize(20).SemiBold();
+            });
+
+            column.Item().PaddingTop(10).Text(text =>
+            {
+                text.Span($"Cấp học: {script.Level}");
+            });
+
+            column.Item().Text(text =>
+            {
+                text.Span($"Loại: {script.Type}");
+            });
+
+            column.Item().PaddingTop(10).Text(text =>
+            {
+                text.Span("Nội dung:");
+            });
+
+            column.Item().PaddingTop(5).Text(text =>
+            {
+                text.Span(script.Content);
+            });
+        });
+    }
+
+    private void ComposeFooter(IContainer container)
+    {
+        container.Row(row =>
+        {
+            row.RelativeItem().Text(text =>
+            {
+                text.Span("Trang ").FontSize(10);
+                text.CurrentPageNumber().FontSize(10);
+                text.Span(" / ").FontSize(10);
+                text.TotalPages().FontSize(10);
+            });
+        });
     }
 } 

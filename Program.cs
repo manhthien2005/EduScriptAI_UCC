@@ -2,8 +2,12 @@
 using EduScriptAI.Data;
 using EduScriptAI.Services;
 using EduScriptAI.Models;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure QuestPDF license
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -197,6 +197,9 @@
                             <a asp-action="Export" asp-route-id="@script.Id" class="btn btn-custom btn-export">
                                 <i class="fas fa-file-export me-2"></i>Xuất Word
                             </a>
+                            <a asp-action="ExportPdf" asp-route-id="@script.Id" class="btn btn-custom btn-export">
+                                <i class="fas fa-file-export me-2"></i>Xuất PDF
+                            </a>
                             <button type="button" class="btn btn-custom btn-delete" onclick="showDeleteModal(@script.Id, '@script.Keywords')">
                                 <i class="fas fa-trash-alt me-2"></i>Xóa
                             </button>
